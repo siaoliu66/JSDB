@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Using Modules in HTML</title>
+</head>
+<body>
+  <h1>Check the console for math operations results</h1>
+  <div id="demo"></div>
+
+  <!-- Include the math.js file as a module -->
+  <script type="module">
+    import { add, subtract, multiply, divide } from './math.js';
+
+    const a = 10;
+    const b = 5;
+
+    console.log(`Add: ${a} + ${b} = ${add(a, b)}`);
+    console.log(`Subtract: ${a} - ${b} = ${subtract(a, b)}`);
+    console.log(`Multiply: ${a} * ${b} = ${multiply(a, b)}`);
+    console.log(`Divide: ${a} / ${b} = ${divide(a, b)}`);
+
+    demo.innerHTML=`Add: ${a} + ${b} = ${add(a, b)}`;
+  </script>
+</body>
+</html>
