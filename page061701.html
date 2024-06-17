@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Firestorage</title>
+</head>
+
+<body>
+    <h1>FILE</h1>
+    <input type="file" accept="image/*" id="btnFiles">
+    <p id="result"></p>
+
+
+    <script type="module">
+        //匯入所需要的函數
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        //新增其他的SDK
+        import { getStorage, ref, uploadBytes } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
+
+
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyB3AXOaWPj6qh1NyQsATnOHXyqg2i-7vTs",
+            authDomain: "jsdb-11305.firebaseapp.com",
+            projectId: "jsdb-11305",
+            storageBucket: "jsdb-11305.appspot.com",
+            messagingSenderId: "373368391922",
+            appId: "1:373368391922:web:784219ae628deef32ea86b"
+        };
+
+        // Firebase 初始化
+        const app = initializeApp(firebaseConfig);
+        const Storage = getStorage(app); //建立資料庫物件常數
+        const btnFiles = document.getElementById('btnFiles');
+        const result = document.getElementById('result');
+
+        btnFiles.addEventListener('change', function(e){
+            var file = e.target.files[0];
+            console.log(file);
+            uploadFile(file);
+        })
+
+        function uploadFile ( file ){
+            const stroageref = ref(Storage, 'product/' + file.name);
+            const metaData = {
+                contentType : 'image.jpeg'
+            }
+
+            uploadBytes(stroageref, file, metaData)
+            .then((snaphot) =>{
+                console.log(snaphot);
+                result.innerHTML = 'Upload file info: </br> File Name: '+ snaphot.ref.name + '</br> File Full Path:'+ snaphot.ref.fullPath +'</br> File Size:'+ file.size
+            })
+            .catch(function(e){
+                console.log(e)
+            })
+        }
+        </script>
+   
+</body>
+
+</html>

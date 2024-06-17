@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Firestorage</title>
+</head>
+
+<body>
+    <h1>FILE</h1>
+    <progress id="uploader" value="0" max="100" style="height: 30px;width:30%"> 0 %</progress></br>
+    <input type="file" accept="image/*" id="btnFiles">
+    <p id="result"></p>
+
+
+    <script type="module">
+        //匯入所需要的函數
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        //新增其他的SDK
+        import { getStorage, ref, uploadBytes, uploadBytesResumable,getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
+
+
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyB3AXOaWPj6qh1NyQsATnOHXyqg2i-7vTs",
+            authDomain: "jsdb-11305.firebaseapp.com",
+            projectId: "jsdb-11305",
+            storageBucket: "jsdb-11305.appspot.com",
+            messagingSenderId: "373368391922",
+            appId: "1:373368391922:web:784219ae628deef32ea86b"
+        };
+
+        // Firebase 初始化
+        const app = initializeApp(firebaseConfig);
+        const Storage = getStorage(app); //建立資料庫物件常數
+        const btnFiles = document.getElementById('btnFiles');
+        const result = document.getElementById('result');
+        const uploader = document.getElementById('uploader');
+
+        btnFiles.addEventListener('change', function(e){
+            var file = e.target.files[0];
+            console.log(file);
+            uploadFile(file);
+        })
+
+        function uploadFile ( file ){
+            const stroageref = ref(Storage, 'product/' + file.name);
+            const metaData = {
+                contentType : 'image.jpeg'
+            }
+
+            const task = uploadBytesResumable(stroageref, file, metaData)
+            task.on('state_changed',
+                (snapshot) =>{
+                    console.log(snapshot);
+                    const progress = (snapshot.bytesTransferred / snapshot.totalBytes)*100;
+                    console.log('上傳檔案已完成進度: '+ progress + '%')
+                    uploader.value = progress;
+                    result.innerHTML = '已上傳: '+ progress.toFixed(2)+'%</br> File Name: '+ snapshot.ref.name + '</br> File Full Path:'+ snapshot.ref.fullPath +'</br> File Size:'+ file.size
+                
+                    switch( snapshot.state ){
+                        case 'pause':
+                            console.log('上傳已暫停');
+                            break;
+                        case 'running':
+                            console.log('上傳正在執行');
+                            break;
+                    }
+                },
+                (error)=>{
+                    result.innerHTML ='錯誤訊息:' + error.message
+                },
+                ()=>{
+                    getDownloadURL(task.snapshot.ref)
+                        .then((dowmloadURL)=>{
+                            console.log('下載檔案的URL: ',dowmloadURL)
+                            result.innerHTML += "<img src='" + dowmloadURL + "'>"
+                        })
+                })      
+        }
+        </script>
+   
+</body>
+
+</html>
