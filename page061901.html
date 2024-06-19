@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Authentication</title>
+    <style>
+        input{
+            margin: 5px;
+        }
+        button{
+            margin: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Login / Logout / Signin </h1>
+    <label for="email">帳號:</label><input type="email" name="email" id="email"></br>
+    <label for="pwd">密碼:<input type="password" name="pwd" id="pwd"></br>
+    <button id="btnlogin">登入</button>
+    <button id="btnsigbin">註冊</button>
+    <button id="btnlogout" style="display: none;">登出</button>
+    <div id="info"></div>
+    <div id="demo"></div>
+
+    <script type="module">
+        //匯入所需要的函數
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        //新增其他的SDK
+        import { getAuth, createUserWithEmailAndPassword , signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyB3AXOaWPj6qh1NyQsATnOHXyqg2i-7vTs",
+            authDomain: "jsdb-11305.firebaseapp.com",
+            projectId: "jsdb-11305",
+            storageBucket: "jsdb-11305.appspot.com",
+            messagingSenderId: "373368391922",
+            appId: "1:373368391922:web:784219ae628deef32ea86b"
+        };
+
+        // Firebase 初始化
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app); //建立資料庫物件常數
+        const email = document.getElementById('email');
+        const pwd = document.getElementById('pwd');
+        const btnlogin = document.getElementById('btnlogin');
+        const btnsigbin = document.getElementById('btnsigbin');
+        const btnlogout = document.getElementById('btnlogout');
+        const info = document.getElementById('info');
+        const demo = document.getElementById('demo');
+
+       
+        btnlogin.addEventListener('click', function(){
+            signInWithEmailAndPassword(auth,email.value,pwd.value)
+                .then((userCredential)=>{
+                    const user = userCredential.user;
+                    console.log(user);
+                    demo.innerHTML = user.email + '登入成功'
+                    email.value = '';
+                    pwd.value = '';
+                    btnlogout.style.display = 'initial';
+                    btnlogin.style.display = 'none';
+                })
+                .catch((error)=>{
+                    const errorCode = error.code;
+                    const errorMsg = error.message;
+                    console.log(errorCode,errorMsg)
+                    demo.innerHTML = '登入失敗!!! 帳密錯誤';
+                    email.value = '';
+                    pwd.value = '';
+                })
+        })
+
+        btnlogout.addEventListener('click', function(){
+            signOut(auth)
+                .then(()=>{
+                    demo.innerHTML =  '登出成功'
+                    email.value = '';
+                    pwd.value = '';
+                    btnlogout.style.display = 'none';
+                    btnlogin.style.display = 'initial';
+                })
+                .catch((error)=>{
+                    demo.innerHTML = '登出失敗!!!' + error.message;
+
+                })
+        })
+
+        btnsigbin.addEventListener('click', function(){
+            createUserWithEmailAndPassword(auth,email.value,pwd.value)
+                .then((userCredential)=>{
+                    const user = userCredential.user;
+                    demo.innerHTML = user.email + '註冊成功'
+                    email.value = '';
+                    pwd.value = '';
+                    btnlogout.style.display = 'initial';
+                    btnlogin.style.display = 'none';
+                })
+                .catch((error)=>{
+                    const errorCode = error.code;
+                    const errorMsg = error.message;
+                    console.log(errorCode,errorMsg)
+                    demo.innerHTML = '註冊失敗!!!';
+                    email.value = '';
+                    pwd.value = '';
+                })
+        })
+        </script>
+   
+</body>
+
+</html>
